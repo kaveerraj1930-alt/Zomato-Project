@@ -11,7 +11,10 @@ from typing import List
 import streamlit as st
 
 # Add project root to path for imports
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# On Streamlit Cloud, file is at: /mount/src/zomato-project/Milestone 1 Zomato/ui/phase2/streamlit_app_phase7.py
+# Project root is at: /mount/src/zomato-project/Milestone 1 Zomato/
+# So we need to go up 2 directories from the file location
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
 from data import get_restaurants
