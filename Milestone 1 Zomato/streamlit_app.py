@@ -14,18 +14,29 @@ import streamlit as st
 # Streamlit Cloud runs from git root, but our project is in a subdirectory
 current_file = os.path.abspath(__file__)
 project_root = os.path.dirname(current_file)
+
+# Add both project root and parent directory to sys.path
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
+parent_dir = os.path.dirname(project_root)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
-# Debug output (using print instead of st.write to see in logs)
-print(f"DEBUG: Current file: {current_file}")
-print(f"DEBUG: Project root: {project_root}")
-print(f"DEBUG: sys.path[0]: {sys.path[0]}")
-print(f"DEBUG: Data dir exists: {os.path.exists(os.path.join(project_root, 'data'))}")
-print(f"DEBUG: Data __init__.py exists: {os.path.exists(os.path.join(project_root, 'data', '__init__.py'))}")
-print(f"DEBUG: Files in project root: {os.listdir(project_root)}")
-
-from data import get_restaurants
+# Try to import with error handling
+try:
+    from data import get_restaurants
+except ImportError as e:
+    # If direct import fails, try importing as a module
+    import importlib.util
+    data_path = os.path.join(project_root, 'data')
+    if os.path.exists(data_path):
+        spec = importlib.util.spec_from_file_location("data", os.path.join(data_path, '__init__.py'))
+        data_module = importlib.util.module_from_spec(spec)
+        sys.modules['data'] = data_module
+        spec.loader.exec_module(data_module)
+        from data import get_restaurants
+    else:
+        raise ImportError(f"Could not find data module at {data_path}. Error: {e}")
 from models.schemas import BudgetBand, Restaurant, UserPreferences
 from phase3.integration import IntegrationLayer
 from phase4.recommendation_engine import RecommendationEngine
