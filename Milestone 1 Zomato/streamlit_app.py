@@ -10,6 +10,13 @@ from typing import List
 
 import streamlit as st
 
+# Add project root to sys.path
+# Streamlit Cloud runs from git root, but our project is in a subdirectory
+current_file = os.path.abspath(__file__)
+project_root = os.path.dirname(current_file)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 from data import get_restaurants
 from models.schemas import BudgetBand, Restaurant, UserPreferences
 from phase3.integration import IntegrationLayer
