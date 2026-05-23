@@ -25,6 +25,16 @@ if project_root not in sys.path:
 if git_root not in sys.path:
     sys.path.insert(0, git_root)
 
+# Debug output
+import streamlit as st
+st.write(f"Current file: {current_file}")
+st.write(f"Project root: {project_root}")
+st.write(f"Git root: {git_root}")
+st.write(f"sys.path[0]: {sys.path[0]}")
+st.write(f"sys.path[1]: {sys.path[1]}")
+st.write(f"Data module exists: {os.path.exists(os.path.join(project_root, 'data'))}")
+st.write(f"Data __init__ exists: {os.path.exists(os.path.join(project_root, 'data', '__init__.py'))}")
+
 from data import get_restaurants
 from models.schemas import BudgetBand, Restaurant, UserPreferences
 from phase3.integration import IntegrationLayer
