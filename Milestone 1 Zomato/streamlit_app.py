@@ -17,13 +17,13 @@ project_root = os.path.dirname(current_file)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-# Debug output
-st.write(f"Current file: {current_file}")
-st.write(f"Project root: {project_root}")
-st.write(f"sys.path[0]: {sys.path[0]}")
-st.write(f"Data dir exists: {os.path.exists(os.path.join(project_root, 'data'))}")
-st.write(f"Data __init__.py exists: {os.path.exists(os.path.join(project_root, 'data', '__init__.py'))}")
-st.write(f"Files in project root: {os.listdir(project_root)}")
+# Debug output (using print instead of st.write to see in logs)
+print(f"DEBUG: Current file: {current_file}")
+print(f"DEBUG: Project root: {project_root}")
+print(f"DEBUG: sys.path[0]: {sys.path[0]}")
+print(f"DEBUG: Data dir exists: {os.path.exists(os.path.join(project_root, 'data'))}")
+print(f"DEBUG: Data __init__.py exists: {os.path.exists(os.path.join(project_root, 'data', '__init__.py'))}")
+print(f"DEBUG: Files in project root: {os.listdir(project_root)}")
 
 from data import get_restaurants
 from models.schemas import BudgetBand, Restaurant, UserPreferences
