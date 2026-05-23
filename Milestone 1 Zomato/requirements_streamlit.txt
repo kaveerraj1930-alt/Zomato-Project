@@ -1,0 +1,16 @@
+# Streamlit Cloud Deployment Requirements (Phase 7)
+
+# Core Streamlit
+streamlit>=1.28.0
+
+# Data processing
+pandas>=2.0.0
+pyarrow>=12.0.0
+datasets>=2.14.0
+
+# LLM client
+openai>=1.0.0
+groq>=0.4.0
+
+# Existing pipeline dependencies
+python-dotenv>=1.0.0
