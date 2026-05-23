@@ -11,11 +11,19 @@ from typing import List
 import streamlit as st
 
 # Add project root to path for imports
-# On Streamlit Cloud, file is at: /mount/src/zomato-project/Milestone 1 Zomato/ui/phase2/streamlit_app_phase7.py
-# Project root is at: /mount/src/zomato-project/Milestone 1 Zomato/
-# So we need to go up 2 directories from the file location
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, project_root)
+# On Streamlit Cloud, the directory structure may vary
+# We'll add multiple potential paths to ensure modules can be found
+current_file = os.path.abspath(__file__)
+# Go up 2 directories to get to project root (Milestone 1 Zomato/)
+project_root = os.path.dirname(os.path.dirname(current_file))
+# Go up 3 directories to get to git root
+git_root = os.path.dirname(os.path.dirname(os.path.dirname(current_file)))
+
+# Add both paths to sys.path
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+if git_root not in sys.path:
+    sys.path.insert(0, git_root)
 
 from data import get_restaurants
 from models.schemas import BudgetBand, Restaurant, UserPreferences
