@@ -55,3 +55,13 @@ export async function getRecommendations(
 export async function getMetadata(): Promise<{ locations: string[]; cuisines: string[] }> {
   return fetchJson<{ locations: string[]; cuisines: string[] }>(`${API_BASE}/metadata`);
 }
+
+export async function getLocations(): Promise<string[]> {
+  const metadata = await getMetadata();
+  return metadata.locations;
+}
+
+export async function getCuisines(): Promise<string[]> {
+  const metadata = await getMetadata();
+  return metadata.cuisines;
+}
