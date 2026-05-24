@@ -56,14 +56,18 @@ class MetadataResponse(BaseModel):
     locations: List[str]
     cuisines: List[str]
 
-# Load restaurants at startup
+# Lazy load restaurants - only load when first request comes in
 restaurants = None
+_restaurants_loaded = False
 
-@app.on_event("startup")
-async def startup_event():
-    global restaurants
-    restaurants = get_restaurants()
-    print(f"Loaded {len(restaurants)} restaurants")
+def get_restaurants_cached():
+    """Lazy load restaurants to reduce memory usage."""
+    global restaurants, _restaurants_loaded
+    if not _restaurants_loaded:
+        restaurants = get_restaurants()
+        _restaurants_loaded = True
+        print(f"Loaded {len(restaurants)} restaurants")
+    return restaurants
 
 @app.get("/")
 async def root():
@@ -72,19 +76,17 @@ async def root():
 @app.get("/metadata")
 async def get_metadata():
     """Get available locations and cuisines."""
-    if not restaurants:
-        raise HTTPException(status_code=500, detail="Restaurants not loaded")
+    restaurants_list = get_restaurants_cached()
     
-    locations = sorted(list(set(r.location for r in restaurants)))
-    cuisines = sorted(list(set(c for r in restaurants for c in r.cuisines)))
+    locations = sorted(list(set(r.location for r in restaurants_list)))
+    cuisines = sorted(list(set(c for r in restaurants_list for c in r.cuisines)))
     
     return MetadataResponse(locations=locations, cuisines=cuisines)
 
 @app.post("/recommendations", response_model=SummaryResponse)
 async def get_recommendations(request: RecommendationRequest):
     """Generate restaurant recommendations based on user preferences."""
-    if not restaurants:
-        raise HTTPException(status_code=500, detail="Restaurants not loaded")
+    restaurants_list = get_restaurants_cached()
     
     try:
         # Convert budget string to BudgetBand enum
@@ -106,7 +108,7 @@ async def get_recommendations(request: RecommendationRequest):
         
         # Apply integration layer
         integration = IntegrationLayer(shortlist_cap=50)
-        shortlist, prompt = integration.process(preferences, restaurants)
+        shortlist, prompt = integration.process(preferences, restaurants_list)
         
         # Generate recommendations using LLM
         groq_api_key = os.getenv("GROQ_API_KEY")
