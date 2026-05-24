@@ -93,6 +93,9 @@ async def get_recommendations(request: RecommendationRequest):
     """Generate restaurant recommendations based on user preferences."""
     restaurants_list = get_restaurants_cached()
     
+    print(f"  [DEBUG] Total restaurants loaded: {len(restaurants_list)}")
+    print(f"  [DEBUG] Request: location={request.location}, budget={request.budget}, cuisine={request.cuisine}, min_rating={request.min_rating}")
+    
     try:
         # Convert budget string to BudgetBand enum
         budget_map = {
@@ -111,9 +114,26 @@ async def get_recommendations(request: RecommendationRequest):
             extras={}
         )
         
-        # Apply integration layer
+        print(f"  [DEBUG] UserPreferences: {preferences.to_dict()}")
+        
+        # Apply integration layer (fixed parameter order)
         integration = IntegrationLayer(shortlist_cap=50)
-        shortlist, prompt = integration.process(preferences, restaurants_list)
+        
+        # Check shortlist size before processing
+        from phase3.integration import IntegrationLayer as IL
+        test_integration = IL()
+        shortlist_size = test_integration.get_shortlist_size(restaurants_list, preferences)
+        print(f"  [DEBUG] Shortlist size after filtering: {shortlist_size}")
+        
+        if shortlist_size == 0:
+            print(f"  [DEBUG] No restaurants matched the filters")
+            return SummaryResponse(
+                recommendations=[],
+                overall_summary="No restaurants matched your criteria. Try adjusting your filters (location, budget, cuisine, or rating)."
+            )
+        
+        shortlist, prompt = integration.process(restaurants_list, preferences)
+        print(f"  [DEBUG] Shortlist after processing: {len(shortlist)} restaurants")
         
         # Generate recommendations using LLM
         groq_api_key = os.getenv("GROQ_API_KEY")
@@ -126,6 +146,8 @@ async def get_recommendations(request: RecommendationRequest):
         
         summary = engine.generate_recommendations(prompt, shortlist)
         
+        print(f"  [DEBUG] Generated {len(summary.recommendations)} recommendations")
+        
         # Convert to API response format
         recommendations = []
         for rec in summary.recommendations:
@@ -134,8 +156,8 @@ async def get_recommendations(request: RecommendationRequest):
                 location=rec.restaurant.location,
                 rating=rec.restaurant.rating,
                 cuisines=rec.restaurant.cuisines,
-                price_range=rec.restaurant.price_range,
-                address=rec.restaurant.address
+                price_range=rec.restaurant.cost_band.value if rec.restaurant.cost_band else "medium",
+                address=rec.restaurant.metadata.get("address", "")
             )
             recommendations.append(RecommendationResponse(
                 rank=rec.rank,
@@ -149,6 +171,9 @@ async def get_recommendations(request: RecommendationRequest):
         )
         
     except Exception as e:
+        print(f"  [DEBUG] Error in recommendations: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
