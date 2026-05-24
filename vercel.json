@@ -1,10 +1,5 @@
 {
   "buildCommand": "cd \"Milestone 1 Zomato/frontend\" && npm run build",
   "outputDirectory": "Milestone 1 Zomato/frontend/.next",
-  "framework": "nextjs",
-  "env": {
-    "NEXT_PUBLIC_BACKEND_URL": {
-      "description": "Backend API URL (e.g., https://your-backend.onrender.com)"
-    }
-  }
+  "framework": "nextjs"
 }
