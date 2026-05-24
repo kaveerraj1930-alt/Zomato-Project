@@ -1,5 +1,7 @@
 name,location,listed_in(city),cuisines,rate,approx_cost(for two people),url,address,rest_type,votes,dish_liked,listed_in(type)
 Truffles,Bellandur,Bangalore,"Burgers, Continental",4.5,400,http://example.com/1,123 Indiranagar,Casual Dining,500,Burger,Cafes
+Bella Ciao,Bellandur,Bangalore,"Italian, Pizza",4.4,600,http://example.com/29,456 Bellandur,Fine Dining,550,Pizza,Dine-out
+Pasta Fresca,Bellandur,Bangalore,"Italian, Continental",4.3,500,http://example.com/30,789 Bellandur,Casual Dining,420,Pasta,Cafes
 Toit,Koramangala,Bangalore,"North Indian, Italian",4.6,600,http://example.com/2,456 Koramangala,Fine Dining,800,Pizza,Dine-out
 Meghana Foods,Jayanagar,Bangalore,"Andhra, Biryani",4.4,300,http://example.com/3,789 Jayanagar,Casual Dining,600,Biryani,Delivery
 Vidyarthi Bhavan,Basavanagudi,Bangalore,"South Indian, Breakfast",4.7,150,http://example.com/4,321 Basavanagudi,Casual Dining,1000,Masala Dosa,Cafes
