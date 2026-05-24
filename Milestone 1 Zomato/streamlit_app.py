@@ -213,6 +213,7 @@ def main() -> None:
                     st.caption("To use AI recommendations, add GROQ_API_KEY to Streamlit Cloud secrets.")
                 
                 engine = RecommendationEngine(
+                    groq_api_key=groq_api_key,
                     model="llama-3.3-70b-versatile",
                     timeout=30,
                     max_retries=3,
