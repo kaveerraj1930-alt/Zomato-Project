@@ -22,21 +22,7 @@ parent_dir = os.path.dirname(project_root)
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-# Try to import with error handling
-try:
-    from data import get_restaurants
-except ImportError as e:
-    # If direct import fails, try importing as a module
-    import importlib.util
-    data_path = os.path.join(project_root, 'data')
-    if os.path.exists(data_path):
-        spec = importlib.util.spec_from_file_location("data", os.path.join(data_path, '__init__.py'))
-        data_module = importlib.util.module_from_spec(spec)
-        sys.modules['data'] = data_module
-        spec.loader.exec_module(data_module)
-        from data import get_restaurants
-    else:
-        raise ImportError(f"Could not find data module at {data_path}. Error: {e}")
+from data import get_restaurants
 from models.schemas import BudgetBand, Restaurant, UserPreferences
 from phase3.integration import IntegrationLayer
 from phase4.recommendation_engine import RecommendationEngine
