@@ -1,6 +1,6 @@
 'use client';
 
-import { SummaryData } from '@/lib/api';
+import { SummaryData } from '../../lib/api';
 
 interface ResultsPanelProps {
   data: SummaryData | null;
