@@ -181,12 +181,6 @@ def main() -> None:
             return
         
         # Create user preferences
-        st.write(f"DEBUG: Creating UserPreferences with:")
-        st.write(f"  location: {location} (type: {type(location)})")
-        st.write(f"  budget: {budget} (type: {type(budget)})")
-        st.write(f"  selected_cuisines: {selected_cuisines} (type: {type(selected_cuisines)})")
-        st.write(f"  min_rating: {min_rating} (type: {type(min_rating)})")
-        
         preferences = UserPreferences(
             location=location,
             budget=budget,
@@ -194,20 +188,6 @@ def main() -> None:
             min_rating=min_rating,
             extras={}
         )
-        
-        # Debug: check preferences type
-        st.write(f"DEBUG: Preferences type: {type(preferences)}")
-        st.write(f"DEBUG: Preferences: {preferences}")
-        
-        # Show search summary
-        st.markdown("---")
-        st.markdown("### Your Search")
-        st.markdown(f"""
-        **Location:** {preferences.location} · 
-        **Budget:** {preferences.budget.value} · 
-        **Cuisine:** {', '.join(preferences.cuisine) if preferences.cuisine else 'Any'} · 
-        **Min Rating:** {preferences.min_rating}
-        """)
         
         # Generate recommendations
         with st.spinner("Generating recommendations..."):
@@ -266,7 +246,7 @@ def main() -> None:
                 # Show shortlist info
                 with st.expander("View Shortlist Details"):
                     st.markdown(f"**Shortlist size:** {len(shortlist)} restaurants")
-                    st.mark("**Top 10 restaurants in shortlist:**")
+                    st.markdown("**Top 10 restaurants in shortlist:**")
                     for i, r in enumerate(shortlist[:10], 1):
                         st.markdown(f"{i}. {r.name} - Rating: {r.rating:.1f} - {', '.join(r.cuisines[:3])}")
                 
