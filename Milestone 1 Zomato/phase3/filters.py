@@ -43,10 +43,12 @@ class FilterPipeline:
             return restaurants
         
         location_lower = preferences.location.lower()
-        return [
+        filtered = [
             r for r in restaurants
             if location_lower in r.location.lower() or location_lower in r.metadata.get("area", "").lower()
         ]
+        print(f"  [DEBUG] Location filter: {preferences.location}, matched {len(filtered)}/{len(restaurants)} restaurants")
+        return filtered
 
     def _filter_by_cuisine(self, restaurants: List[Restaurant], preferences: UserPreferences) -> List[Restaurant]:
         """Filter restaurants by cuisine (match any of the user's preferred cuisines)."""
@@ -69,6 +71,7 @@ class FilterPipeline:
                 if r in filtered:
                     break
         
+        print(f"  [DEBUG] Cuisine filter: {cuisine_list}, matched {len(filtered)}/{len(restaurants)} restaurants")
         return filtered
 
     def _filter_by_rating(self, restaurants: List[Restaurant], preferences: UserPreferences) -> List[Restaurant]:
