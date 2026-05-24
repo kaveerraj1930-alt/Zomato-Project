@@ -22,6 +22,11 @@ IMPORTANT CONSTRAINTS:
 
     def build_prompt(self, preferences: UserPreferences, shortlist: List[Restaurant]) -> str:
         """Build the complete prompt with system message, preferences, and restaurant data."""
+        # Handle case where parameters might be swapped (workaround for the bug)
+        if isinstance(preferences, list) and hasattr(shortlist, 'to_dict'):
+            # Parameters are swapped - swap them back
+            preferences, shortlist = shortlist, preferences
+        
         if not shortlist:
             return self._build_empty_prompt(preferences)
         
