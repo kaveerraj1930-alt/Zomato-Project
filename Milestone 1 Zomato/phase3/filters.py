@@ -19,9 +19,13 @@ class FilterPipeline:
 
     def apply(self, restaurants: List[Restaurant], preferences: UserPreferences) -> List[Restaurant]:
         """Apply all filters sequentially to the restaurant list."""
+        print(f"DEBUG FilterPipeline.apply: preferences type = {type(preferences)}")
+        print(f"DEBUG FilterPipeline.apply: preferences = {preferences}")
         filtered = restaurants
         for filter_func in self.filters:
+            print(f"DEBUG FilterPipeline: calling {filter_func.__name__} with preferences type = {type(preferences)}")
             filtered = filter_func(filtered, preferences)
+            print(f"DEBUG FilterPipeline: after {filter_func.__name__}, filtered type = {type(filtered)}, length = {len(filtered)}")
         return filtered
 
     def _filter_by_location(self, restaurants: List[Restaurant], preferences: UserPreferences) -> List[Restaurant]:
