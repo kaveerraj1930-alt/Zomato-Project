@@ -32,6 +32,10 @@ class IntegrationLayer:
             - shortlist: Filtered and capped list of restaurants
             - prompt: LLM-ready prompt with preferences and restaurant data
         """
+        # Debug output
+        print(f"DEBUG integration.process: preferences type = {type(preferences)}")
+        print(f"DEBUG integration.process: preferences = {preferences}")
+        
         # Apply filter pipeline
         filtered = self.filter_pipeline.apply(restaurants, preferences)
         
