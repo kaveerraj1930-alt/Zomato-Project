@@ -17,7 +17,7 @@ export default function Home() {
       const summary = await getRecommendations({
         location: data.location,
         budget: data.budget,
-        cuisine: data.cuisine,
+        cuisine: [data.cuisine],
         min_rating: data.min_rating,
       });
       setResults(summary);
