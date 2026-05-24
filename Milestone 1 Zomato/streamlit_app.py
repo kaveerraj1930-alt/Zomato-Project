@@ -196,6 +196,11 @@ def main() -> None:
                 integration = IntegrationLayer()
                 shortlist, prompt = integration.process(preferences, restaurants)
                 
+                # Debug: check shortlist
+                st.write(f"Shortlist size: {len(shortlist)}")
+                if shortlist:
+                    st.write(f"First 3 shortlist items: {[r.name for r in shortlist[:3]]}")
+                
                 # Generate recommendations using LLM (Phase 4)
                 groq_api_key = os.getenv("GROQ_API_KEY")
                 if not groq_api_key:
