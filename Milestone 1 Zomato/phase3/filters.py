@@ -30,6 +30,8 @@ class FilterPipeline:
 
     def _filter_by_location(self, restaurants: List[Restaurant], preferences: UserPreferences) -> List[Restaurant]:
         """Filter restaurants by location (case-insensitive partial match)."""
+        print(f"DEBUG _filter_by_location: preferences type = {type(preferences)}")
+        print(f"DEBUG _filter_by_location: preferences = {preferences}")
         if not preferences.location:
             return restaurants
         
