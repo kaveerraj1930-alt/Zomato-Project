@@ -32,6 +32,11 @@ class IntegrationLayer:
             - shortlist: Filtered and capped list of restaurants
             - prompt: LLM-ready prompt with preferences and restaurant data
         """
+        # Handle parameter swapping at the entry point (workaround for the bug)
+        if isinstance(restaurants, UserPreferences) and isinstance(preferences, list):
+            # Parameters are swapped - swap them back
+            restaurants, preferences = preferences, restaurants
+        
         # Apply filter pipeline
         filtered = self.filter_pipeline.apply(restaurants, preferences)
         
