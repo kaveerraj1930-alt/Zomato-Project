@@ -1,10 +1,16 @@
 """FastAPI backend for restaurant recommendation system."""
 
+import sys
+import os
+from pathlib import Path
+
+# Add parent directory to Python path to import project modules
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
-import os
 
 from models.schemas import UserPreferences, BudgetBand
 from data import get_restaurants
