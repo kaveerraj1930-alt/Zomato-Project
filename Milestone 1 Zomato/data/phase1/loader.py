@@ -19,6 +19,13 @@ def load_raw_dataframe(settings: Settings | None = None) -> pd.DataFrame:
     Raises DataLoadError on network or repository failures.
     """
     cfg = settings or get_settings()
+    
+    # Try to load from sample CSV file first (for faster deployment)
+    sample_csv_path = cfg.project_root / "data" / "sample_restaurants.csv"
+    if sample_csv_path.exists():
+        return pd.read_csv(sample_csv_path)
+    
+    # Fallback to Hugging Face if CSV doesn't exist
     last_error: Exception | None = None
 
     for attempt in range(MAX_RETRIES + 1):
