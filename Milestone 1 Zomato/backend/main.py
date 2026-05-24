@@ -78,10 +78,15 @@ async def get_metadata():
     """Get available locations and cuisines."""
     restaurants_list = get_restaurants_cached()
     
-    locations = sorted(list(set(r.location for r in restaurants_list)))
+    # Extract areas from metadata instead of location (which is the city)
+    areas = sorted(list(set(r.metadata.get("area", r.location) for r in restaurants_list if r.metadata.get("area"))))
+    # If no areas found, fall back to location
+    if not areas:
+        areas = sorted(list(set(r.location for r in restaurants_list)))
+    
     cuisines = sorted(list(set(c for r in restaurants_list for c in r.cuisines)))
     
-    return MetadataResponse(locations=locations, cuisines=cuisines)
+    return MetadataResponse(locations=areas, cuisines=cuisines)
 
 @app.post("/recommendations", response_model=SummaryResponse)
 async def get_recommendations(request: RecommendationRequest):
