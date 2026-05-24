@@ -43,10 +43,19 @@ class FilterPipeline:
             return restaurants
         
         location_lower = preferences.location.lower()
-        filtered = [
-            r for r in restaurants
-            if location_lower in r.location.lower() or location_lower in r.metadata.get("area", "").lower()
-        ]
+        
+        # If the location is a city (Bangalore), match all restaurants in that city
+        # If the location is an area (Bellandur, Koramangala, etc.), match restaurants in that area OR all restaurants in the city
+        # This ensures we get enough restaurants for recommendations
+        if location_lower in ["bangalore", "bengaluru"]:
+            filtered = [r for r in restaurants if r.location.lower() == "bangalore"]
+        else:
+            # Match restaurants in the specific area OR all restaurants in the city
+            filtered = [
+                r for r in restaurants
+                if location_lower in r.location.lower() or location_lower in r.metadata.get("area", "").lower() or r.location.lower() == "bangalore"
+            ]
+        
         print(f"  [DEBUG] Location filter: {preferences.location}, matched {len(filtered)}/{len(restaurants)} restaurants")
         return filtered
 
