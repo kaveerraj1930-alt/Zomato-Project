@@ -206,6 +206,11 @@ def main() -> None:
                 integration = IntegrationLayer()
                 shortlist, prompt = integration.process(preferences, restaurants)
                 
+                st.write(f"DEBUG: Shortlist type: {type(shortlist)}, length: {len(shortlist)}")
+                if shortlist:
+                    st.write(f"DEBUG: First shortlist item type: {type(shortlist[0])}")
+                    st.write(f"DEBUG: First shortlist item: {shortlist[0]}")
+                
                 # Generate recommendations using LLM (Phase 4)
                 groq_api_key = os.getenv("GROQ_API_KEY")
                 if not groq_api_key:
@@ -220,6 +225,14 @@ def main() -> None:
                 )
                 
                 summary = engine.generate_recommendations(prompt, shortlist)
+                
+                st.write(f"DEBUG: Summary type: {type(summary)}")
+                st.write(f"DEBUG: Summary has recommendations: {hasattr(summary, 'recommendations')}")
+                if hasattr(summary, 'recommendations'):
+                    st.write(f"DEBUG: Recommendations type: {type(summary.recommendations)}")
+                    if summary.recommendations:
+                        st.write(f"DEBUG: First recommendation type: {type(summary.recommendations[0])}")
+                        st.write(f"DEBUG: First recommendation: {summary.recommendations[0]}")
                 
                 # Display results
                 st.markdown("---")
@@ -254,6 +267,9 @@ def main() -> None:
                 
             except Exception as e:
                 st.error(f"An error occurred: {str(e)}")
+                st.error(f"Error type: {type(e).__name__}")
+                import traceback
+                st.error(f"Traceback: {traceback.format_exc()}")
                 st.caption("Please try again or check your preferences.")
     
     with tab2:
