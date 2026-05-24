@@ -1,14 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/:path*`,
-      },
-    ];
-  },
+  // Remove output: 'standalone' as it's for Docker deployments
+  // Remove rewrites as frontend now calls backend API directly via lib/api.ts
 };
 
 module.exports = nextConfig;
