@@ -73,6 +73,12 @@ st.markdown("""
 
 def render_recommendation_card(rank: int, restaurant: Restaurant, explanation: str) -> None:
     """Render a single recommendation card."""
+    # Debug: check if restaurant is a Restaurant object
+    if not hasattr(restaurant, 'location'):
+        st.error(f"Error: restaurant object is not a Restaurant object. Type: {type(restaurant)}")
+        st.error(f"Restaurant data: {restaurant}")
+        return
+    
     cost = f"₹{restaurant.cost_for_two:.0f} for two" if restaurant.cost_for_two else "Cost N/A"
     cuisines = ", ".join(restaurant.cuisines) if restaurant.cuisines else "—"
     
@@ -213,6 +219,15 @@ def main() -> None:
                 )
                 
                 summary = engine.generate_recommendations(prompt, shortlist)
+                
+                # Debug: check summary structure
+                st.write(f"DEBUG: Summary type: {type(summary)}")
+                st.write(f"DEBUG: Summary has recommendations: {hasattr(summary, 'recommendations')}")
+                if hasattr(summary, 'recommendations'):
+                    st.write(f"DEBUG: Recommendations type: {type(summary.recommendations)}")
+                    if summary.recommendations:
+                        st.write(f"DEBUG: First recommendation type: {type(summary.recommendations[0])}")
+                        st.write(f"DEBUG: First recommendation: {summary.recommendations[0]}")
                 
                 # Display results
                 st.markdown("---")
