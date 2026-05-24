@@ -214,6 +214,14 @@ def main() -> None:
             try:
                 # Apply integration layer (Phase 3)
                 st.write(f"DEBUG: Before integration.process - preferences type: {type(preferences)}")
+                st.write(f"DEBUG: Before integration.process - preferences: {preferences}")
+                
+                # Check if preferences is the correct type before calling integration
+                if not isinstance(preferences, UserPreferences):
+                    st.error(f"ERROR: preferences is not UserPreferences, it's {type(preferences)}")
+                    st.error(f"ERROR: preferences = {preferences}")
+                    raise TypeError(f"Expected UserPreferences, got {type(preferences)}")
+                
                 integration = IntegrationLayer()
                 shortlist, prompt, debug_info = integration.process(preferences, restaurants)
                 st.write(f"DEBUG: After integration.process - shortlist type: {type(shortlist)}")
