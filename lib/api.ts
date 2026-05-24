@@ -18,6 +18,7 @@ export interface RestaurantData {
   price_range: string;
   address: string;
   rating: number;
+  cost_for_two?: number;
 }
 
 export interface RecommendationData {

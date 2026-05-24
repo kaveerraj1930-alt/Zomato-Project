@@ -61,7 +61,7 @@ export default function ResultsPanel({ data, loading }: ResultsPanelProps) {
 
       {data.recommendations.map((rec) => (
         <div
-          key={rec.restaurant.id}
+          key={rec.rank}
           className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md transition"
         >
           {/* Title row */}
