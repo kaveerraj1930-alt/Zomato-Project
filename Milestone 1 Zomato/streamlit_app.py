@@ -100,124 +100,182 @@ def main() -> None:
         unsafe_allow_html=True,
     )
     
-    # Sidebar for preferences
-    with st.sidebar:
-        st.header("Your Preferences")
+    # Load restaurant data to get options
+    with st.spinner("Loading restaurant data..."):
+        try:
+            restaurants = get_restaurants()
+            # Get unique locations and cuisines
+            locations = sorted(list(set(r.location for r in restaurants)))
+            all_cuisines = sorted(list(set(cuisine for r in restaurants for cuisine in r.cuisines)))
+        except Exception as e:
+            st.error(f"Error loading restaurant data: {str(e)}")
+            return
+    
+    # Create tabs for main interface
+    tab1, tab2 = st.tabs(["🔍 Find Restaurants", "ℹ️ About"])
+    
+    with tab1:
+        # Preferences form in center
+        st.markdown("### Your Preferences")
         
-        # Location input
-        location = st.text_input(
-            "Location",
-            placeholder="e.g., Bellandur, Indiranagar",
-            help="Enter the area or locality in Bangalore"
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Location dropdown
+            location = st.selectbox(
+                "Location",
+                options=locations,
+                index=0,
+                help="Select the area or locality in Bangalore"
+            )
+            
+            # Budget selection
+            budget_option = st.selectbox(
+                "Budget",
+                options=["Low", "Medium", "High"],
+                index=1,
+                help="Select your budget range"
+            )
+            budget_map = {"Low": BudgetBand.LOW, "Medium": BudgetBand.MEDIUM, "High": BudgetBand.HIGH}
+            budget = budget_map[budget_option]
+        
+        with col2:
+            # Cuisine dropdown (multi-select)
+            selected_cuisines = st.multiselect(
+                "Cuisine",
+                options=all_cuisines,
+                default=[],
+                max_selections=5,
+                help="Select up to 5 cuisines (leave empty for any)"
+            )
+            
+            # Minimum rating
+            min_rating = st.slider(
+                "Minimum Rating",
+                min_value=0.0,
+                max_value=5.0,
+                value=4.0,
+                step=0.1,
+                help="Minimum restaurant rating"
+            )
+        
+        # Submit button
+        submitted = st.button("Get Recommendations", type="primary", use_container_width=True)
+        
+        if not submitted:
+            st.info("👆 Select your preferences and click 'Get Recommendations' to find restaurants.")
+            return
+        
+        # Create user preferences
+        preferences = UserPreferences(
+            location=location,
+            budget=budget,
+            cuisine=selected_cuisines,
+            min_rating=min_rating,
+            extras={}
         )
         
-        # Budget selection
-        budget_option = st.selectbox(
-            "Budget",
-            options=["Low", "Medium", "High"],
-            index=1,
-            help="Select your budget range"
-        )
-        budget_map = {"Low": BudgetBand.LOW, "Medium": BudgetBand.MEDIUM, "High": BudgetBand.HIGH}
-        budget = budget_map[budget_option]
+        # Show search summary
+        st.markdown("---")
+        st.markdown("### Your Search")
+        st.markdown(f"""
+        **Location:** {preferences.location} · 
+        **Budget:** {preferences.budget.value} · 
+        **Cuisine:** {', '.join(preferences.cuisine) if preferences.cuisine else 'Any'} · 
+        **Min Rating:** {preferences.min_rating}
+        """)
         
-        # Cuisine input
-        cuisine_input = st.text_input(
-            "Cuisine (optional)",
-            placeholder="e.g., Italian, North Indian",
-            help="Enter cuisine type (leave empty for any)"
-        )
-        cuisines = [c.strip() for c in cuisine_input.split(",")] if cuisine_input else []
-        
-        # Minimum rating
-        min_rating = st.slider(
-            "Minimum Rating",
-            min_value=0.0,
-            max_value=5.0,
-            value=4.0,
-            step=0.1,
-            help="Minimum restaurant rating"
+        # Generate recommendations
+        with st.spinner("Generating recommendations..."):
+            try:
+                # Apply integration layer (Phase 3)
+                integration = IntegrationLayer()
+                shortlist, prompt = integration.generate_prompt(preferences, restaurants)
+                
+                # Generate recommendations using LLM (Phase 4)
+                groq_api_key = os.getenv("GROQ_API_KEY")
+                if not groq_api_key:
+                    st.warning("⚠️ GROQ_API_KEY not found. Using rule-based recommendations instead.")
+                    st.caption("To use AI recommendations, add GROQ_API_KEY to Streamlit Cloud secrets.")
+                
+                engine = RecommendationEngine(
+                    model="llama-3.3-70b-versatile",
+                    timeout=30,
+                    max_retries=3,
+                )
+                
+                summary = engine.generate_recommendations(prompt, shortlist)
+                
+                # Display results
+                st.markdown("---")
+                st.markdown("### Top Recommendations")
+                
+                if summary.recommendations:
+                    for rec in summary.recommendations:
+                        render_recommendation_card(rec.rank, rec.restaurant, rec.explanation)
+                    
+                    if summary.overall_summary:
+                        st.markdown("---")
+                        st.markdown(f"**Summary:** {summary.overall_summary}")
+                else:
+                    st.warning("No recommendations found. Try adjusting your preferences.")
+                    st.caption(f"Shortlist size: {len(shortlist)} restaurants matched your criteria.")
+                
+                # Show shortlist info
+                with st.expander("View Shortlist Details"):
+                    st.markdown(f"**Shortlist size:** {len(shortlist)} restaurants")
+                    st.mark("**Top 10 restaurants in shortlist:**")
+                    for i, r in enumerate(shortlist[:10], 1):
+                        st.markdown(f"{i}. {r.name} - Rating: {r.rating:.1f} - {', '.join(r.cuisines[:3])}")
+                
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+                st.caption("Please try again or check your preferences.")
+    
+    with tab2:
+        # Additional information tab
+        st.markdown("### About This App")
+        st.info(
+            """
+            This app uses AI to recommend restaurants based on your preferences. 
+            It filters the dataset and uses an LLM to rank and explain the recommendations.
+            
+            **How it works:**
+            1. You select your preferences (location, budget, cuisine, rating)
+            2. The app filters the restaurant dataset based on your criteria
+            3. An AI model (LLM) ranks the matching restaurants and provides explanations
+            4. You get personalized recommendations with AI-generated insights
+            
+            **Features:**
+            - AI-powered restaurant recommendations
+            - Personalized explanations for each recommendation
+            - Filter by location, budget, cuisine, and rating
+            - Dataset of 24,000+ restaurants in Bangalore
+            """
         )
         
         st.markdown("---")
-        st.subheader("About")
-        st.info(
-            "This app uses AI to recommend restaurants based on your preferences. "
-            "It filters the dataset and uses an LLM to rank and explain the recommendations."
+        st.markdown("### Dataset Information")
+        st.success(
+            f"""
+            **Total Restaurants:** {len(restaurants):,}
+            
+            **Available Locations:** {len(locations)}
+            
+            **Available Cuisines:** {len(all_cuisines)}
+            
+            **Data Source:** Hugging Face - ManikaSaini/zomato-restaurant-recommendation
+            """
         )
-    
-    # Main content area
-    if not location:
-        st.warning("Please enter a location in the sidebar to get started.")
-        return
-    
-    # Create user preferences
-    preferences = UserPreferences(
-        location=location,
-        budget=budget,
-        cuisine=cuisines,
-        min_rating=min_rating,
-        extras={}
-    )
-    
-    # Show search summary
-    st.markdown("### Your Search")
-    st.markdown(f"""
-    **Location:** {preferences.location} · 
-    **Budget:** {preferences.budget.value} · 
-    **Cuisine:** {', '.join(preferences.cuisine) if preferences.cuisine else 'Any'} · 
-    **Min Rating:** {preferences.min_rating}
-    """)
-    
-    # Generate recommendations
-    with st.spinner("Loading restaurant data and generating recommendations..."):
-        try:
-            # Load restaurant data
-            restaurants = get_restaurants()
-            
-            # Apply integration layer (Phase 3)
-            integration = IntegrationLayer()
-            shortlist, prompt = integration.generate_prompt(preferences, restaurants)
-            
-            # Generate recommendations using LLM (Phase 4)
-            groq_api_key = os.getenv("GROQ_API_KEY")
-            if not groq_api_key:
-                st.warning("⚠️ GROQ_API_KEY not found. Using rule-based recommendations instead.")
-                st.caption("To use AI recommendations, add GROQ_API_KEY to Streamlit Cloud secrets.")
-            
-            engine = RecommendationEngine(
-                model="llama-3.3-70b-versatile",
-                timeout=30,
-                max_retries=3,
-            )
-            
-            summary = engine.generate_recommendations(prompt, shortlist)
-            
-            # Display results
-            st.markdown("---")
-            st.markdown("### Top Recommendations")
-            
-            if summary.recommendations:
-                for rec in summary.recommendations:
-                    render_recommendation_card(rec.rank, rec.restaurant, rec.explanation)
-                
-                if summary.overall_summary:
-                    st.markdown("---")
-                    st.markdown(f"**Summary:** {summary.overall_summary}")
-            else:
-                st.warning("No recommendations found. Try adjusting your preferences.")
-                st.caption(f"Shortlist size: {len(shortlist)} restaurants matched your criteria.")
-            
-            # Show shortlist info
-            with st.expander("View Shortlist Details"):
-                st.markdown(f"**Shortlist size:** {len(shortlist)} restaurants")
-                st.mark("**Top 10 restaurants in shortlist:**")
-                for i, r in enumerate(shortlist[:10], 1):
-                    st.markdown(f"{i}. {r.name} - Rating: {r.rating:.1f} - {', '.join(r.cuisines[:3])}")
-            
-        except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
-            st.caption("Please try again or check your preferences.")
+        
+        st.markdown("---")
+        st.markdown("### Technology Stack")
+        st.markdown("""
+        - **Frontend:** Streamlit
+        - **AI/LLM:** Groq (Llama 3.3 70B)
+        - **Data Processing:** Pandas, PyArrow
+        - **Dataset:** Hugging Face Datasets
+        """)
 
 
 if __name__ == "__main__":
