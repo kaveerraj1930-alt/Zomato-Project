@@ -25,8 +25,13 @@ def load_raw_dataframe(settings: Settings | None = None) -> pd.DataFrame:
         try:
             from datasets import load_dataset
 
+            # Load only a sample of the dataset for faster startup on Render
             dataset = load_dataset(cfg.hf_dataset_name, split="train")
-            return dataset.to_pandas()
+            # Take first 1000 rows for faster loading
+            df = dataset.to_pandas()
+            if len(df) > 1000:
+                df = df.head(1000)
+            return df
         except Exception as exc:
             last_error = exc
             if attempt < MAX_RETRIES:
