@@ -215,8 +215,9 @@ def main() -> None:
                 # Apply integration layer (Phase 3)
                 st.write(f"DEBUG: Before integration.process - preferences type: {type(preferences)}")
                 integration = IntegrationLayer()
-                shortlist, prompt = integration.process(preferences, restaurants)
+                shortlist, prompt, debug_info = integration.process(preferences, restaurants)
                 st.write(f"DEBUG: After integration.process - shortlist type: {type(shortlist)}")
+                st.write(f"DEBUG: Integration debug info: {debug_info}")
                 
                 st.write(f"DEBUG: Shortlist type: {type(shortlist)}, length: {len(shortlist)}")
                 if shortlist:
