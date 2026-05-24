@@ -117,7 +117,7 @@ async def get_recommendations(request: RecommendationRequest):
         print(f"  [DEBUG] UserPreferences: {preferences.to_dict()}")
         
         # Apply integration layer (fixed parameter order)
-        integration = IntegrationLayer(shortlist_cap=100)
+        integration = IntegrationLayer(shortlist_cap=200)
         
         # Check shortlist size before processing
         from phase3.integration import IntegrationLayer as IL

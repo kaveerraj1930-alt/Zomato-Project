@@ -54,18 +54,22 @@ class FilterPipeline:
         if not cuisine_list:
             return restaurants
         
-        # Make cuisine matching more lenient - match partial words
-        cuisine_lower = [c.lower() for c in cuisine_list]
-        return [
-            r for r in restaurants
-            if any(
-                any(cuisine in cuisine_str.lower() for cuisine_str in r.cuisines)
-                for cuisine in cuisine_lower
-            ) or any(
-                any(cuisine_str.lower() in cuisine for cuisine in cuisine_lower)
-                for cuisine_str in r.cuisines
-            )
-        ]
+        # Make cuisine matching very lenient - match if ANY user cuisine matches ANY restaurant cuisine
+        cuisine_lower = [c.lower().strip() for c in cuisine_list]
+        filtered = []
+        for r in restaurants:
+            # Check if any of the user's cuisines match any of the restaurant's cuisines
+            for user_cuisine in cuisine_lower:
+                for restaurant_cuisine in r.cuisines:
+                    restaurant_cuisine_lower = restaurant_cuisine.lower().strip()
+                    # Match if user cuisine is contained in restaurant cuisine or vice versa
+                    if user_cuisine in restaurant_cuisine_lower or restaurant_cuisine_lower in user_cuisine:
+                        filtered.append(r)
+                        break
+                if r in filtered:
+                    break
+        
+        return filtered
 
     def _filter_by_rating(self, restaurants: List[Restaurant], preferences: UserPreferences) -> List[Restaurant]:
         """Filter restaurants by minimum rating."""
