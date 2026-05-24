@@ -2,7 +2,7 @@ services:
   - type: web
     name: zomato-recommender-backend
     env: python
-    plan: free
+    plan: starter  # Increased from free to starter for more memory (1GB)
     buildCommand: cd "Milestone 1 Zomato/backend" && pip install -r requirements.txt
     startCommand: cd "Milestone 1 Zomato/backend" && uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
