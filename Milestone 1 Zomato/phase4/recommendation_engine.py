@@ -91,7 +91,7 @@ class RecommendationEngine:
             if recommendations:
                 print(f"  [DEBUG] Returning {len(recommendations)} LLM recommendations")
                 return Summary(
-                    recommendations=recommendations[:5],  # Limit to top 5
+                    recommendations=recommendations[:10],  # Limit to top 10
                     overall_summary=overall_summary,
                 )
             
@@ -126,8 +126,8 @@ class RecommendationEngine:
         Returns:
             Summary with rule-based recommendations
         """
-        # Sort by rating and take top 5
-        sorted_restaurants = sorted(shortlist, key=lambda r: r.rating, reverse=True)[:5]
+        # Sort by rating and take top 10
+        sorted_restaurants = sorted(shortlist, key=lambda r: r.rating, reverse=True)[:10]
         
         recommendations = []
         for rank, restaurant in enumerate(sorted_restaurants, start=1):
