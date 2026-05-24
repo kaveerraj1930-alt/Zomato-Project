@@ -33,7 +33,11 @@ class IntegrationLayer:
             - prompt: LLM-ready prompt with preferences and restaurant data
             - debug_info: Debug information about the process
         """
-        # Debug output
+        # Debug output - print immediately to ensure it's visible
+        print(f"DEBUG integration.process START: preferences type = {type(preferences)}")
+        print(f"DEBUG integration.process START: preferences = {preferences}")
+        print(f"DEBUG integration.process START: restaurants type = {type(restaurants)}")
+        
         debug_info = f"preferences type = {type(preferences)}, preferences = {preferences}"
         
         # Apply filter pipeline
