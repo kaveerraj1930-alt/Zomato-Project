@@ -568,9 +568,9 @@ python -m phase6.deployment.validate_stack
 
 ---
 
-## Phase 7: Streamlit Cloud Deployment
+## Phase 7: Render + Vercel Deployment
 
-**Goal:** Package the full recommendation pipeline as a single-file Streamlit app and deploy it publicly on Streamlit Community Cloud — zero infrastructure, shareable via URL.
+**Goal:** Deploy the recommendation system with backend on Render and frontend on Vercel for a scalable, production-ready deployment.
 
 **Maps to problem statement:** *§ System Workflow → 5. Output Display (cloud-hosted)*
 
@@ -578,11 +578,17 @@ python -m phase6.deployment.validate_stack
 
 ```mermaid
 flowchart TB
-    subgraph StreamlitApp["Streamlit App (streamlit_app.py)"]
-        SF[Preference Form]
-        SR[Results Display]
-        SP[Pipeline Orchestrator]
-        SF --> SP --> SR
+    subgraph Frontend["Frontend (Next.js)"]
+        FF[Preference Form]
+        FR[Results Display]
+        FA[API Client]
+        FF --> FA --> FR
+    end
+
+    subgraph Backend["Backend (FastAPI)"]
+        BA[API Endpoints]
+        BP[Pipeline Orchestrator]
+        BA --> BP
     end
 
     subgraph Pipeline["Existing Pipeline (Phases 1-4)"]
@@ -591,59 +597,81 @@ flowchart TB
         F4[phase4/ — LLM engine]
     end
 
-    subgraph Cloud["Streamlit Community Cloud"]
+    subgraph Cloud["Render + Vercel"]
         GH[GitHub Repo]
-        SCC[streamlit.io deploy]
-        GH --> SCC
+        RD[Render Backend]
+        VC[Vercel Frontend]
+        GH --> RD
+        GH --> VC
     end
 
-    SP --> D1
+    FA --> BA
+    BP --> D1
     D1 --> F3
     F3 --> F4
-    F4 --> SR
-    StreamlitApp --> GH
+    F4 --> BP
+    Frontend --> GH
+    Backend --> GH
 ```
 
 ### Components
 
 | Component | Responsibility |
 |-----------|----------------|
-| **`ui/phase2/streamlit_app.py`** | Single-entry Streamlit UI — preference form + results rendering |
-| **Pipeline imports** | Reuses `data/`, `phase3/`, `phase4/` directly (no FastAPI layer needed) |
-| **`requirements.txt`** | Must include `streamlit`, `groq`, `datasets`, `pandas`, `pyarrow` |
-| **`secrets.toml` / Streamlit Secrets** | `GROQ_API_KEY` stored in Streamlit Cloud secrets manager (never in repo) |
-| **GitHub Actions (optional)** | Auto-deploy on push to `main` |
+| **`backend/main.py`** | FastAPI backend with recommendation API endpoints |
+| **`frontend/app/page.tsx`** | Next.js frontend with preference form and results display |
+| **`frontend/lib/api.ts`** | API client for calling backend endpoints |
+| **Pipeline imports** | Backend reuses `data/`, `phase3/`, `phase4/` directly |
+| **`backend/requirements.txt`** | Must include `fastapi`, `uvicorn`, `groq`, `datasets`, `pandas`, `pyarrow` |
+| **`frontend/package.json`** | Must include `next`, `react`, `react-dom` |
+| **Render Environment Variables** | `GROQ_API_KEY` stored in Render environment variables |
+| **Vercel Environment Variables** | `NEXT_PUBLIC_BACKEND_URL` stored in Vercel environment variables |
 
 ### Folder Structure
 
 ```
 (project root)
-├── ui/
-│   └── phase2/
-│       └── streamlit_app.py     # Entry point for Streamlit Cloud
-├── requirements.txt              # Must list streamlit + all pipeline deps
-├── .streamlit/
-│   └── config.toml              # Optional: theme, server settings
-└── data/cache/
-    └── restaurants.parquet      # Pre-cached dataset (committed or generated on first run)
+├── backend/
+│   ├── main.py                 # FastAPI backend entry point
+│   ├── requirements.txt        # Backend dependencies
+│   ├── render.yaml             # Render deployment config
+│   └── .env.example            # Backend environment variables template
+├── frontend/
+│   ├── app/
+│   │   └── page.tsx           # Next.js frontend page
+│   ├── lib/
+│   │   └── api.ts             # API client
+│   ├── package.json            # Frontend dependencies
+│   ├── vercel.json            # Vercel deployment config
+│   └── .env.example           # Frontend environment variables template
+├── data/
+│   └── cache/
+│       └── restaurants.parquet # Pre-cached dataset (committed or generated on first run)
+└── DEPLOYMENT.md              # Comprehensive deployment guide
 ```
 
 ### Deployment Steps
 
-1. **Push to GitHub** — ensure `streamlit_app.py`, `requirements.txt`, and `data/cache/restaurants.parquet` are committed.
-2. **Connect to Streamlit Cloud** — go to [share.streamlit.io](https://share.streamlit.io), link the GitHub repo, set the entry file to `ui/phase2/streamlit_app.py`.
-3. **Add secrets** — in the Streamlit Cloud dashboard → *Secrets* → add:
-   ```toml
-   GROQ_API_KEY = "your_groq_key_here"
+1. **Push to GitHub** — ensure `backend/`, `frontend/`, and `data/cache/restaurants.parquet` are committed.
+2. **Deploy Backend to Render** — go to [render.com](https://render.com), connect the GitHub repo, create a new Web Service for the backend directory.
+3. **Add Render Secrets** — in the Render dashboard → *Environment* → add:
+   ```bash
+   GROQ_API_KEY=your_groq_key_here
    ```
-4. **Deploy** — Streamlit Cloud installs `requirements.txt` and launches the app.
-5. **Share URL** — the app is publicly accessible at `https://<app-name>.streamlit.app`.
+4. **Deploy Frontend to Vercel** — go to [vercel.com](https://vercel.com), connect the GitHub repo, create a new Project for the frontend directory.
+5. **Add Vercel Environment Variables** — in the Vercel dashboard → *Environment Variables* → add:
+   ```bash
+   NEXT_PUBLIC_BACKEND_URL=https://your-backend.onrender.com
+   ```
+6. **Deploy** — Render and Vercel will automatically deploy on push to `main`.
+7. **Share URLs** — Backend is accessible at `https://<app-name>.onrender.com`, Frontend at `https://<app-name>.vercel.app`.
 
 ### Environment Configuration
 
 | Variable | Where set | Notes |
 |----------|-----------|-------|
-| `GROQ_API_KEY` | Streamlit Cloud Secrets | Never commit to repo |
+| `GROQ_API_KEY` | Render Environment Variables | Never commit to repo |
+| `NEXT_PUBLIC_BACKEND_URL` | Vercel Environment Variables | Backend URL from Render |
 | Dataset cache | `data/cache/restaurants.parquet` | Committed to avoid re-download on cold start |
 
 ### Inputs / Outputs
@@ -654,12 +682,14 @@ flowchart TB
 
 ### Exit Criteria
 
-- App loads in browser via public Streamlit Cloud URL
-- Preference form accepts location, budget, cuisine, min rating
+- Backend loads on Render and responds to API requests
+- Frontend loads on Vercel and displays preference form
+- Frontend successfully calls backend API endpoints
 - Recommendations display with restaurant name, rating, cuisines, cost, and LLM explanation
 - Fallback to rule-based top-5 if `GROQ_API_KEY` is absent or LLM call fails
 - No secrets hardcoded anywhere in the repo
 - Cold start completes within 60 seconds (dataset loaded from Parquet cache)
+- CORS configured to allow frontend to call backend
 
 ---
 
