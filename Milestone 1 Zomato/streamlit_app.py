@@ -181,6 +181,12 @@ def main() -> None:
             return
         
         # Create user preferences
+        st.write(f"DEBUG: Creating UserPreferences with:")
+        st.write(f"  location: {location} (type: {type(location)})")
+        st.write(f"  budget: {budget} (type: {type(budget)})")
+        st.write(f"  selected_cuisines: {selected_cuisines} (type: {type(selected_cuisines)})")
+        st.write(f"  min_rating: {min_rating} (type: {type(min_rating)})")
+        
         preferences = UserPreferences(
             location=location,
             budget=budget,
@@ -188,6 +194,10 @@ def main() -> None:
             min_rating=min_rating,
             extras={}
         )
+        
+        # Debug: check preferences type
+        st.write(f"DEBUG: Preferences type: {type(preferences)}")
+        st.write(f"DEBUG: Preferences: {preferences}")
         
         # Show search summary
         st.markdown("---")
