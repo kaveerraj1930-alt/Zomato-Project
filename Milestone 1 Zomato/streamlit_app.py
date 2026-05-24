@@ -211,29 +211,12 @@ def main() -> None:
                 
                 summary = engine.generate_recommendations(prompt, shortlist)
                 
-                st.write(f"DEBUG: Summary type: {type(summary)}")
-                st.write(f"DEBUG: Summary has recommendations: {hasattr(summary, 'recommendations')}")
-                if hasattr(summary, 'recommendations'):
-                    st.write(f"DEBUG: Recommendations type: {type(summary.recommendations)}")
-                    if summary.recommendations:
-                        st.write(f"DEBUG: First recommendation type: {type(summary.recommendations[0])}")
-                        st.write(f"DEBUG: First recommendation: {summary.recommendations[0]}")
-                
                 # Display results
                 st.markdown("---")
                 st.markdown("### Top Recommendations")
                 
                 if summary.recommendations:
                     for rec in summary.recommendations:
-                        # Type checking to ensure we have the right data structure
-                        if not hasattr(rec, 'restaurant'):
-                            st.error(f"Error: Recommendation object missing 'restaurant' attribute. Type: {type(rec)}")
-                            st.error(f"Recommendation data: {rec}")
-                            continue
-                        if not hasattr(rec.restaurant, 'location'):
-                            st.error(f"Error: Restaurant object missing 'location' attribute. Type: {type(rec.restaurant)}")
-                            st.error(f"Restaurant data: {rec.restaurant}")
-                            continue
                         render_recommendation_card(rec.rank, rec.restaurant, rec.explanation)
                     
                     if summary.overall_summary:
