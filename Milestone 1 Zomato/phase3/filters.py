@@ -21,6 +21,13 @@ class FilterPipeline:
         """Apply all filters sequentially to the restaurant list."""
         print(f"DEBUG FilterPipeline.apply: preferences type = {type(preferences)}")
         print(f"DEBUG FilterPipeline.apply: preferences = {preferences}")
+        
+        # Type check to prevent the error
+        if not isinstance(preferences, UserPreferences):
+            print(f"ERROR: preferences is not UserPreferences, it's {type(preferences)}")
+            print(f"ERROR: preferences = {preferences}")
+            raise TypeError(f"Expected UserPreferences, got {type(preferences)}")
+        
         filtered = restaurants
         for filter_func in self.filters:
             print(f"DEBUG FilterPipeline: calling {filter_func.__name__} with preferences type = {type(preferences)}")
