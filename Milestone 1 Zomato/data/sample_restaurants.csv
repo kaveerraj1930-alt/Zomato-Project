@@ -1,11 +1,11 @@
 name,location,listed_in(city),cuisines,rate,approx_cost(for two people),url,address,rest_type,votes,dish_liked,listed_in(type)
-Restaurant 1,Bangalore,Bangalore,"North Indian, Chinese",4.2,500,http://example.com/1,123 Main Street,Casual Dining,100,Biryani,Buffet
-Restaurant 2,Bangalore,Bangalore,"South Indian, Biryani",4.5,300,http://example.com/2,456 High Street,Casual Dining,150,Dosa,Cafes
-Restaurant 3,Mumbai,Mumbai,"Maharashtrian, Street Food",4.0,800,http://example.com/3,789 Park Avenue,Fine Dining,80,Vada Pav,Delivery
-Restaurant 4,Mumbai,Mumbai,"Italian, Continental",3.8,1200,http://example.com/4,321 Broadway,Fine Dining,120,Pizza,Dine-out
-Restaurant 5,Delhi,Delhi,"North Indian, Mughlai",4.3,600,http://example.com/5,654 Market Street,Casual Dining,200,Butter Chicken,Buffet
-Restaurant 6,Delhi,Delhi,"Chinese, Thai",4.1,1500,http://example.com/6,987 River Road,Fine Dining,90,Pad Thai,Dine-out
-Restaurant 7,Chennai,Chennai,"South Indian, Tamil",4.6,250,http://example.com/7,147 Beach Road,Casual Dining,180,Idli,Cafes
-Restaurant 8,Chennai,Chennai,"Chettinad, Andhra",4.4,400,http://example.com/8,258 Temple Street,Casual Dining,110,Chicken 65,Buffet
-Restaurant 9,Hyderabad,Hyderabad,"Biryani, Hyderabadi",4.7,350,http://example.com/9,369 Tech Park,Casual Dining,220,Hyderabadi Biryani,Delivery
-Restaurant 10,Hyderabad,Hyderabad,"North Indian, Chinese",4.2,900,http://example.com/10,741 City Center,Fine Dining,130,Manchurian,Dine-out
+Truffles,Bangalore,Bangalore,"Burgers, Continental",4.5,400,http://example.com/1,123 Indiranagar,Casual Dining,500,Burger,Cafes
+Toit,Bangalore,Bangalore,"North Indian, Italian",4.6,600,http://example.com/2,456 Koramangala,Fine Dining,800,Pizza,Dine-out
+Meghana Foods,Bangalore,Bangalore,"Andhra, Biryani",4.4,300,http://example.com/3,789 Jayanagar,Casual Dining,600,Biryani,Delivery
+Vidyarthi Bhavan,Bangalore,Bangalore,"South Indian, Breakfast",4.7,150,http://example.com/4,321 Basavanagudi,Casual Dining,1000,Masala Dosa,Cafes
+Chung Wah,Bangalore,Bangalore,"Chinese, Thai",4.2,500,http://example.com/5,654 MG Road,Casual Dining,400,Manchurian,Dine-out
+Punjabi Rasoi,Bangalore,Bangalore,"North Indian, Mughlai",4.3,350,http://example.com/6,987 Whitefield,Casual Dining,300,Butter Chicken,Delivery
+Paradise Hotel,Bangalore,Bangalore,"Biryani, Hyderabadi",4.5,400,http://example.com/7,147 Electronic City,Casual Dining,550,Chicken Biryani,Buffet
+Cafe Coffee Day,Bangalore,Bangalore,"Cafe, Continental",4.0,250,http://example.com/8,258 Brigade Road,Cafe,200,Coffee,Cafes
+Barbeque Nation,Bangalore,Bangalore,"BBQ, North Indian",4.6,800,http://example.com/9,369 Residency Road,Fine Dining,700,Grill,Dine-out
+Nandini Palace,Bangalore,Bangalore,"Andhra, South Indian",4.4,300,http://example.com/10,741 BTM Layout,Casual Dining,350,Meals,Delivery
