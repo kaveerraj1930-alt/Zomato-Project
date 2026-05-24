@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import PreferenceForm, { FormData } from './components/PreferenceForm';
 import ResultsPanel from './components/ResultsPanel';
-import { getRecommendations, SummaryData } from '@/lib/api';
+import { getRecommendations, SummaryData } from '../lib/api';
 
 export default function Home() {
   const [results, setResults] = useState<SummaryData | null>(null);

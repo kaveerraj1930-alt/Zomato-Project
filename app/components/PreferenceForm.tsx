@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
-import { getLocations, getCuisines } from '@/lib/api';
+import { getLocations, getCuisines } from '../../lib/api';
 
 export interface FormData {
   location: string;
