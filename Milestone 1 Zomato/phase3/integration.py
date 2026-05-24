@@ -10,7 +10,7 @@ from phase3.prompt_builder import PromptBuilder
 class IntegrationLayer:
     """Orchestrates the integration layer: filtering and prompt building."""
 
-    def __init__(self, shortlist_cap: int = 20):
+    def __init__(self, shortlist_cap: int = 50):
         self.filter_pipeline = FilterPipeline()
         self.prompt_builder = PromptBuilder()
         self.shortlist_cap = shortlist_cap
