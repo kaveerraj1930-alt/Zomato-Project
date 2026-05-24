@@ -19,7 +19,7 @@ class IntegrationLayer:
         self, 
         restaurants: List[Restaurant], 
         preferences: UserPreferences
-    ) -> Tuple[List[Restaurant], str, str]:
+    ) -> Tuple[List[Restaurant], str]:
         """
         Process restaurants through the integration layer.
         
@@ -28,18 +28,10 @@ class IntegrationLayer:
             preferences: Validated user preferences
             
         Returns:
-            Tuple of (shortlist, prompt, debug_info) where:
+            Tuple of (shortlist, prompt) where:
             - shortlist: Filtered and capped list of restaurants
             - prompt: LLM-ready prompt with preferences and restaurant data
-            - debug_info: Debug information about the process
         """
-        # Debug output - print immediately to ensure it's visible
-        print(f"DEBUG integration.process START: preferences type = {type(preferences)}")
-        print(f"DEBUG integration.process START: preferences = {preferences}")
-        print(f"DEBUG integration.process START: restaurants type = {type(restaurants)}")
-        
-        debug_info = f"preferences type = {type(preferences)}, preferences = {preferences}"
-        
         # Apply filter pipeline
         filtered = self.filter_pipeline.apply(restaurants, preferences)
         
@@ -49,7 +41,7 @@ class IntegrationLayer:
         # Build prompt
         prompt = self.prompt_builder.build_prompt(preferences, shortlist)
         
-        return shortlist, prompt, debug_info
+        return shortlist, prompt
 
     def get_shortlist_size(self, restaurants: List[Restaurant], preferences: UserPreferences) -> int:
         """Get the size of the shortlist without building the prompt."""

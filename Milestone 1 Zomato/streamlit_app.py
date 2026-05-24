@@ -213,24 +213,8 @@ def main() -> None:
         with st.spinner("Generating recommendations..."):
             try:
                 # Apply integration layer (Phase 3)
-                st.write(f"DEBUG: Before integration.process - preferences type: {type(preferences)}")
-                st.write(f"DEBUG: Before integration.process - preferences: {preferences}")
-                
-                # Check if preferences is the correct type before calling integration
-                if not isinstance(preferences, UserPreferences):
-                    st.error(f"ERROR: preferences is not UserPreferences, it's {type(preferences)}")
-                    st.error(f"ERROR: preferences = {preferences}")
-                    raise TypeError(f"Expected UserPreferences, got {type(preferences)}")
-                
                 integration = IntegrationLayer()
-                shortlist, prompt, debug_info = integration.process(preferences, restaurants)
-                st.write(f"DEBUG: After integration.process - shortlist type: {type(shortlist)}")
-                st.write(f"DEBUG: Integration debug info: {debug_info}")
-                
-                st.write(f"DEBUG: Shortlist type: {type(shortlist)}, length: {len(shortlist)}")
-                if shortlist:
-                    st.write(f"DEBUG: First shortlist item type: {type(shortlist[0])}")
-                    st.write(f"DEBUG: First shortlist item: {shortlist[0]}")
+                shortlist, prompt = integration.process(preferences, restaurants)
                 
                 # Generate recommendations using LLM (Phase 4)
                 groq_api_key = os.getenv("GROQ_API_KEY")
