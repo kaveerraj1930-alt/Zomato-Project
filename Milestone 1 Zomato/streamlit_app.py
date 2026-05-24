@@ -129,15 +129,23 @@ def main() -> None:
                 help="Select the area or locality in Bangalore"
             )
             
-            # Budget selection
-            budget_option = st.selectbox(
-                "Budget",
-                options=["Low", "Medium", "High"],
-                index=1,
-                help="Select your budget range"
+            # Budget manual input
+            budget_amount = st.number_input(
+                "Budget (₹ for two)",
+                min_value=0,
+                max_value=10000,
+                value=1000,
+                step=100,
+                help="Enter your budget for two people"
             )
-            budget_map = {"Low": BudgetBand.LOW, "Medium": BudgetBand.MEDIUM, "High": BudgetBand.HIGH}
-            budget = budget_map[budget_option]
+            
+            # Determine budget band based on amount
+            if budget_amount <= 500:
+                budget = BudgetBand.LOW
+            elif budget_amount <= 1500:
+                budget = BudgetBand.MEDIUM
+            else:
+                budget = BudgetBand.HIGH
         
         with col2:
             # Cuisine dropdown (multi-select)
@@ -190,7 +198,7 @@ def main() -> None:
             try:
                 # Apply integration layer (Phase 3)
                 integration = IntegrationLayer()
-                shortlist, prompt = integration.generate_prompt(preferences, restaurants)
+                shortlist, prompt = integration.process(preferences, restaurants)
                 
                 # Generate recommendations using LLM (Phase 4)
                 groq_api_key = os.getenv("GROQ_API_KEY")
